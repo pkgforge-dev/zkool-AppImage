@@ -21,10 +21,8 @@ get-debloated-pkgs --add-common --prefer-nano
 
 echo "Getting app..."
 echo "---------------------------------------------------------------"
-if ! wget --retry-connrefused --tries=30 "$DEB_LINK" -O /tmp/app.deb 2>/tmp/download.log; then
-	cat /tmp/download.log
-	exit 1
-fi
+wget --retry-connrefused --tries=30 "$DEB_LINK" -O /tmp/app.deb
+
 ar xvf /tmp/app.deb
 tar -xvf ./data.tar.zst
 rm -f ./*.zst ./*.deb
@@ -38,3 +36,6 @@ mv -v ./AppDir/share/zkool                                 ./AppDir/bin
 mkdir -p ./AppDir/shared
 mv -v ./AppDir/bin/lib  ./AppDir/shared
 ln -s ../shared/lib     ./AppDir/bin/lib
+
+VERSION=$(echo "$DEB_LINK" | awk -F'/' '{print $(NF-1); exit}')
+echo "${VERSION#*-}" > ~/version
